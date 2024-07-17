@@ -1,0 +1,8 @@
+smtp_user: smtp_user@example.com
+smtp_password: 12345JustLikeMyLuggage
+email_list: identimetics-email-alerts@example.com
+# PowerSchool API URL, base URL for your PowerSchool server
+ps_api_url: https://powerschool.example.com
+# PowerSchool Client Secrets {Client ID:Client Secret} from Plugin Configuration page
+ps_client_id: 12345-12345-12345-12345
+ps_client_secret: 12345-Just-Like-My-Luggage
