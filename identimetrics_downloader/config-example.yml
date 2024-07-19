@@ -1,3 +1,4 @@
+# SMPT User and Password for sending notification emails
 smtp_user: smtp_user@example.com
 smtp_password: 12345JustLikeMyLuggage
 email_list: identimetics-email-alerts@example.com
@@ -6,3 +7,7 @@ ps_api_url: https://powerschool.example.com
 # PowerSchool Client Secrets {Client ID:Client Secret} from Plugin Configuration page
 ps_client_id: 12345-12345-12345-12345
 ps_client_secret: 12345-Just-Like-My-Luggage
+# Abbreviation of schools to skip for students - MUST be upper case
+student_skip_schools: [EXM1, EXM2]
+# Abbreviation of schools to skip for staff - MUST be upper case
+staff_skip_schools: [EXM1, EXM2]
