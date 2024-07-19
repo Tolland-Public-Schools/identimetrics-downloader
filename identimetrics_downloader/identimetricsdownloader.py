@@ -6,6 +6,8 @@ import yaml
 import requests
 import base64
 import datetime
+import argparse
+import pathlib
 
 class IdentimetricsDownloader:
     config = None
@@ -13,7 +15,9 @@ class IdentimetricsDownloader:
     errors = ""
     students = []
     staff = []
-    total_students = 0;
+    total_students = 0
+    total_staff = 0
+    export_path = os.path.dirname(os.path.abspath(__file__))
     # Load the configuration from the config.yml, config-devel.yml, or config-example.yml file
     # If loading config-example.yml, copy it to config.yml and open the file for editing
     def load_config(self):
@@ -131,28 +135,47 @@ class IdentimetricsDownloader:
             print("Error downloading staff: " + str(e))
             self.errors += "Error downloading staff: " + str(e)  + "\n"
 
-    def write_students(self):
-        print("Writing Students")
+    # Perform any necessary data sanitization, such as removing commas
+    def sanitize_data(self, data):
         try:
+            for person in data:
+                for key in person:
+                    if type(person[key]) == str:
+                        person[key] = person[key].replace(",", "")
+        except Exception as e:
+            print("Error sanitizing data: " + str(e))
+            self.errors += "Error sanitizing data: " + str(e)  + "\n"
+
+    # If the export path does not exist, create it
+    def create_export_path(self):
+        if (os.path.exists(self.export_path) == False):
+            os.makedirs(self.export_path)
+    
+    # Write the students to a CSV file in the specified export path
+    def write_students(self):        
+        try:
+            path = os.path.join(self.export_path, 'students.csv')
+            print("Writing Students to " + path)
             # If there's a students.csv file, rename it to students + timestamp
-            if os.path.exists('students.csv'):
-                os.rename('students.csv', 'students-' + str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + '.csv')
-            with open('students.csv', 'w') as f:
+            if os.path.exists(path):
+                print("Backing up existing students.csv")
+                os.rename(path, path + '-' + str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + '.csv')
+            with open(path, 'w') as f:
                 for student in self.students:
                     # Skip students from certain schools defined in config file
                     if student["abbreviation"].upper() in self.config["student_skip_schools"]:
                         print("skipping student from " + student["abbreviation"])
                         continue
                     # PowerSchool excludes the middle name for students where it's not present
-                    middleName = ""
+                    middle_name = ""
                     if "middle_name" in student:
-                        middleName = student["middle_name"]
+                        middle_name = student["middle_name"]
                     else:
-                        middleName = ""
+                        middle_name = ""
                     # Write the student to the file
                     f.write(student["last_name"] + "," + 
                             student["first_name"] + "," + 
-                            middleName + "," + 
+                            middle_name + "," + 
                             student["student_number"] + "," + 
                             student["abbreviation"] + "," + 
                             student["grade_level"] + "," + 
@@ -160,19 +183,72 @@ class IdentimetricsDownloader:
         except Exception as e:
             print("Error writing students: " + str(e))
             self.errors += "Error writing students: " + str(e)  + "\n"
+    
+    # Write the staff to a CSV file in the specified export path
+    def write_staff(self):        
+        try:
+            path = os.path.join(self.export_path, 'staff.csv')
+            print("Writing Staff to " + path)
+            # If there's a staff.csv file, rename it to students + timestamp
+            if os.path.exists(path):
+                print("Backing up existing staff.csv")
+                os.rename(path, path + '-' + str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S")) + '.csv')
+            with open(path, 'w') as f:
+                for staff_member in self.staff:
+                    # Skip staff from certain schools defined in config file
+                    if staff_member["abbreviation"].upper() in self.config["staff_skip_schools"]:
+                        print("skipping staff from " + staff_member["abbreviation"])
+                        continue
+                    # PowerSchool may exclude the middle name for staff members where it's not present
+                    middle_name = ""
+                    if "middle_name" in staff_member:
+                        middle_name = staff_member["middle_name"]
+                    else:
+                        middle_name = ""
+                    # Get the Identimetrics "Level 2" designation for staff from the config file, fall back to "Staff"
+                    staff_level_2 = "Staff"
+                    if "staff_level_2" in self.config:
+                        staff_level_2 = self.config["staff_level_2"]
+                    # Write the student to the file
+                    f.write(staff_member["last_name"] + "," + 
+                            staff_member["first_name"] + "," + 
+                            middle_name + "," + 
+                            staff_member["teachernumber"] + "," + 
+                            staff_member["abbreviation"] + "," + 
+                            staff_level_2 + "," + 
+                            staff_member["abbreviation"] + "\n")
+        except Exception as e:
+            print("Error writing staff: " + str(e))
+            self.errors += "Error writing staff: " + str(e)  + "\n"
         
+    # Run the Identimetrics Downloader
     def run(self):
-        print("Running Identimetrics Downloader")
+        print("Running Identimetrics Downloader")        
+        print("Exporting files to directory: " + str(setup_args().output_path))
         self.load_config()
         self.authenticate_with_power_school()
         self.download_students()
         self.download_staff()
+        self.create_export_path()
+        print("Sanitizing data (removing commas, etc.)")
+        self.sanitize_data(self.students)
+        self.sanitize_data(self.staff)
         self.write_students()
+        self.write_staff()
+
+# Setup the command line arguments
+def setup_args():
+    parser = argparse.ArgumentParser(description='Identimetrics Downloader')
+    parser.add_argument('output_path', type=pathlib.Path, help="Path to output the student and staff export files")
+    return parser.parse_args()
 
 # Main function
 def main():
+    setup_args()
     print("Identimetrics Downloader")
     downloader = IdentimetricsDownloader()
+    downloader.export_path = setup_args().output_path
     downloader.run()
+
 if __name__ == "__main__":
    main()
