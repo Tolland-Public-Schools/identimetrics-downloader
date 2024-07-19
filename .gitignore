@@ -1,6 +1,7 @@
 # Private
 config-devel.yml
 config.yml
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
