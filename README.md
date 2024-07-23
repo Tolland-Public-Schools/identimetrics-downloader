@@ -6,11 +6,11 @@ Download staff and student data from the PowerSchool Identimetrics Plugs for nig
 On first run, _internal/config-example.yml will be copied to _internal/config.yml and opened in your operating system's default text editor. Be sure to configure for your setup before running again.
 
 ### Windows:
-identimetricsdownloader.exe [path to export folders]  
+identimetricsdownloader.exe [path to export folder]  
 Example: identimetricsdownloader.exe c:\users\public\
 
 ### Linux:
-./identimetricsdownloader [path to export folders]  
+./identimetricsdownloader [path to export folder]  
 Example: ./identimetricsdownloader ~/
 
 #### Icon created by Tolland High School alum Ame Thammavong
