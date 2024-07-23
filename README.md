@@ -2,3 +2,4 @@
 Download staff and student data from the PowerSchool Identimetrics Plugs for nightly uploads
 
 Icon created by Tolland High School alum Ame Thammavong
+![image info](./identimetrics_downloader/icon/identimetricsdownloader.png)
