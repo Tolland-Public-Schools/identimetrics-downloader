@@ -11,7 +11,7 @@ Example: identimetricsdownloader.exe c:\users\public\
 
 ### Linux:
 ./identimetricsdownloader [path to export folders]  
-Example: ./identimetricsdownloader.exe ~/
+Example: ./identimetricsdownloader ~/
 
 #### Icon created by Tolland High School alum Ame Thammavong
 ![image info](./identimetrics_downloader/icon/identimetricsdownloader.png)
