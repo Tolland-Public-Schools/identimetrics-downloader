@@ -8,6 +8,9 @@ import base64
 import datetime
 import argparse
 import pathlib
+import smtplib
+
+from email.message import EmailMessage
 
 class IdentimetricsDownloader:
     config = None
@@ -15,8 +18,8 @@ class IdentimetricsDownloader:
     errors = ""
     students = []
     staff = []
-    total_students = 0
-    total_staff = 0
+    student_count = 0
+    staff_count = 0
     export_path = os.path.dirname(os.path.abspath(__file__))
     # Load the configuration from the config.yml, config-devel.yml, or config-example.yml file
     # If loading config-example.yml, copy it to config.yml and open the file for editing
@@ -180,9 +183,11 @@ class IdentimetricsDownloader:
                             student["abbreviation"] + "," + 
                             student["grade_level"] + "," + 
                             student["abbreviation"] + "\n")
+                    self.student_count += 1
         except Exception as e:
             print("Error writing students: " + str(e))
             self.errors += "Error writing students: " + str(e)  + "\n"
+        print("Wrote " + str(self.student_count) + " students to " + path)
     
     # Write the staff to a CSV file in the specified export path
     def write_staff(self):        
@@ -217,9 +222,38 @@ class IdentimetricsDownloader:
                             staff_member["abbreviation"] + "," + 
                             staff_level_2 + "," + 
                             staff_member["abbreviation"] + "\n")
+                    self.staff_count += 1
         except Exception as e:
             print("Error writing staff: " + str(e))
             self.errors += "Error writing staff: " + str(e)  + "\n"
+        print("Wrote " + str(self.staff_count) + " staff to " + path)
+
+    def email_results(self):
+        if (self.config["send_update_email"] == False):
+            print("Emailing results disabled")
+            return
+        try:
+            msg = EmailMessage()
+            msg['Subject'] = 'Identimetrics Downloader Results'
+            body = "Identimetrics Downloader Results\n\n" + \
+                "Exported " + str(self.student_count) + " students and " + str(self.staff_count) + " staff\n\n"
+            if (self.errors != ""):
+                body += "Errors: " + self.errors
+            else:
+                body += "No errors encountered"
+            msg.set_content(body)
+            msg['From'] = self.config["smtp_user"]
+            msg['To'] = self.config["email_list"]
+            s = smtplib.SMTP(self.config["smtp_server"], self.config["smtp_port"])
+            s.ehlo()
+            s.starttls()
+            s.login(self.config["smtp_user"], self.config["smtp_password"])
+            s.send_message(msg)
+            s.close()
+        except Exception as e:
+            print("Error creating email: " + str(e))
+            self.errors += "Error creating email: " + str(e)  + "\n"
+
         
     # Run the Identimetrics Downloader
     def run(self):
@@ -235,6 +269,7 @@ class IdentimetricsDownloader:
         self.sanitize_data(self.staff)
         self.write_students()
         self.write_staff()
+        self.email_results()
 
 # Setup the command line arguments
 def setup_args():
