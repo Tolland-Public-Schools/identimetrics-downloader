@@ -9,6 +9,10 @@ On first run, _internal/config-example.yml will be copied to _internal/config.ym
 identimetricsdownloader.exe [path to export folder]  
 Example: identimetricsdownloader.exe c:\users\public\
 
+#### Scheduled Task
+If running as a Windows Scheduled task, make sure to give whichever user the job will be running as "Log on as a batch job" permissions under Security Settings > Local Policies > User Rights Assignment in the Local Security Policy manager.  
+Use the 'Add arguments (optional)' box to specify the export folder.
+
 ### Linux:
 ./identimetricsdownloader [path to export folder]  
 Example: ./identimetricsdownloader ~/
