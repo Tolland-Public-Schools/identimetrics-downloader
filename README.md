@@ -1,5 +1,5 @@
 # identimetrics-downloader
-Download staff and student data from the PowerSchool Identimetrics Plugs for nightly uploads.
+Download staff and student data from the PowerSchool Identimetrics Plugins for nightly uploads.
 
 ## Usage:
 
@@ -19,3 +19,6 @@ Example: ./identimetricsdownloader ~/
 
 #### Icon created by Tolland High School alum Ame Thammavong
 ![image info](./identimetrics_downloader/icon/identimetricsdownloader.png)
+
+#### Note
+This application is not affiliated in any way with the Identimetrics, Inc.
