@@ -10,7 +10,7 @@ identimetricsdownloader.exe [path to export folder]
 Example: identimetricsdownloader.exe c:\users\public\
 
 #### Scheduled Task
-If running as a Windows Scheduled task, make sure to give whichever user the job will be running as "Log on as a batch job" permissions under Security Settings > Local Policies > User Rights Assignment in the Local Security Policy manager.  
+If running as a Windows scheduled task, make sure to give whichever user the job will be running as "Log on as a batch job" permissions under Security Settings > Local Policies > User Rights Assignment in the Local Security Policy manager.  
 Use the 'Add arguments (optional)' box to specify the export folder.
 
 ### Linux:
