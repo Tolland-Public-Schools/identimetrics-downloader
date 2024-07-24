@@ -21,4 +21,4 @@ Example: ./identimetricsdownloader ~/
 ![image info](./identimetrics_downloader/icon/identimetricsdownloader.png)
 
 #### Note
-This application is not affiliated in any way with the Identimetrics, Inc.
+This application is not affiliated in any way with Identimetrics, Inc.
